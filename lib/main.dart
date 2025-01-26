@@ -16,7 +16,7 @@ class MainApp extends StatelessWidget {
       create: (context) => SearchBloc(),
       child: const MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: HomeScreen(),
+        home: HomeScreen(title: "iTunes Search"),
       ),
     );
   }
