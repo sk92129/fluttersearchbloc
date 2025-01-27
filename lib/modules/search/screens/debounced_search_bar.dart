@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rxdart/rxdart.dart';
-import 'dart:async'; 
+import 'dart:async';
+
+import 'package:searchsimple/modules/search/blocs/search_bloc.dart';
+import 'package:searchsimple/modules/search/blocs/search_state.dart';
+import 'package:searchsimple/modules/search/data/itunes_item.dart'; 
 
 /// This is a simplified version of debounced search based on the following example:
 /// https://api.flutter.dev/flutter/material/SearchAnchor-class.html#material.SearchAnchor.4
@@ -79,6 +84,7 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
   final _searchController = SearchController();
   late final _Debounceable<Iterable<T>?, String> _debouncedSearch;
   final _debouncedSearchRx = BehaviorSubject<String>.seeded('');
+  final  List<ITunesItem> resultsiTunes = <ITunesItem>[];
 
   Future<Iterable<T>> _search(String query) async {
     print('Searching for: $query');
@@ -112,7 +118,22 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return SearchAnchor(
+
+    return BlocBuilder<SearchBloc, SearchState>(
+      builder: (context, state) {
+
+            if (state is SearchSuccessState) {
+              var list = state.result;
+              resultsiTunes.clear();
+              for (var item in list) {
+                resultsiTunes.add(item);
+                print("in home screen SearchSuccessState" + item.trackName);
+              }
+            } else {
+             resultsiTunes.clear();
+            }
+
+            return SearchAnchor(
       searchController: _searchController,
       builder: (BuildContext context, SearchController controller) {
         return SearchBar(
@@ -144,6 +165,38 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
           );
         }).toList();
       },
+
+      viewBuilder: (suggestions) {
+        return viewBuilderResult(suggestions, resultsiTunes);
+      },
     );
+
+      });
+      
+    
+
   }
+  
+  Widget viewBuilderResult(Iterable<Widget> suggestions, List<ITunesItem> resultsiTunes) {
+    
+    return buildList(resultsiTunes);
+  }
+
+
+
+  ListView buildList( List<ITunesItem>  inputs) {
+    return ListView.builder(
+        itemCount: inputs.length,
+        itemBuilder: (context, index) {
+          final item = inputs[index];
+          return ListTile(
+            title: Text(item.trackName),
+            onTap: () {
+              //_searchController.closeView(item);
+            },
+          );
+        });
+  }
+
+
 }

@@ -1,14 +1,38 @@
-class SearchState {
-  final List<String> data;
-  SearchState({required this.data});
+import 'package:equatable/equatable.dart';
+import 'package:searchsimple/modules/search/data/itunes_item.dart';
 
-  SearchState copyWith({
-    List<String>? data,
-  }) {
-    return SearchState(data: data ?? this.data);
-  }
+class SearchState extends Equatable {
+  @override
+  List<Object?> get props => [];
 }
-//initial state with empty list
-class EmptySearchState extends SearchState {
-  EmptySearchState() : super(data: []);
+
+
+class SearchInitialState extends SearchState {
+    final String data;
+  SearchInitialState({required this.data});
+
+  @override
+  List<Object?> get props => [data];
 }
+
+class SearchSuccessState extends SearchState {
+  final Iterable<ITunesItem> result;
+
+
+  SearchSuccessState(this.result);
+
+  @override
+  List<Object?> get props => [result];
+}
+
+
+class SearchErrorState extends SearchState {
+  final String msg;
+
+
+  SearchErrorState(this.msg);
+
+  @override
+  List<Object?> get props => [msg];
+}
+

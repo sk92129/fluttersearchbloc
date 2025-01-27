@@ -3,6 +3,6 @@ abstract class SearchEvent {
 }
 
 class SearchingEvent extends SearchEvent {
-  final List<String> data;
-  SearchingEvent(this.data);
+  final String query;
+  SearchingEvent( this.query);
 }
