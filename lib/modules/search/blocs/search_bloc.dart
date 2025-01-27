@@ -17,10 +17,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
    print('Searching for: ' + event.query);
    try {
       final Iterable<ITunesItem> results = await searchITunes(event.query); 
-      for (var item in results) {
-        print(item.trackName);
-      }   
-     
+      
       emit(SearchSuccessState(results));
 
 

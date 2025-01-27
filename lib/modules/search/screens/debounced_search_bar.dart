@@ -121,10 +121,12 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
 
     return BlocConsumer<SearchBloc, SearchState>(
         listenWhen: (_, newState) =>
+          newState is SearchInitialState ||
           newState is SearchSuccessState ||
             newState is SearchErrorState ,
 
         buildWhen: (_, newState) =>
+           newState is SearchInitialState ||
             newState is SearchSuccessState ||
             newState is SearchErrorState,
 
@@ -150,51 +152,57 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
                 resultsiTunes.add(item);
                 print("buider in debounced SearchSuccessState" + item.trackName);
               }
+
             } else {
              
             }
 
             return SearchAnchor(
-      searchController: _searchController,
-      builder: (BuildContext context, SearchController controller) {
-        return SearchBar(
-          controller: controller,
-          padding: const MaterialStatePropertyAll<EdgeInsets>(
-              EdgeInsets.symmetric(horizontal: 16.0)),
-          onTap: () {
-            controller.openView();
-          },
-          leading: const Icon(Icons.search),
-          hintText: widget.hintText,
-        );
-      },
-      suggestionsBuilder: (BuildContext context, SearchController controller) async {
-        final results = await _debouncedSearch(controller.text);
-        if (results == null) {
-          return <Widget>[];
-        }
-        
-        return results.map((result) {
-          print("result after search $result");
-          return ListTile(
-            title: widget.resultTitleBuilder(result),
-            subtitle: widget.resultSubtitleBuilder?.call(result),
-            leading: widget.resultLeadingBuilder?.call(result),
-            onTap: () {
-              widget.onResultSelected?.call(result);
-              controller.closeView(widget.resultToString(result));
-            },
-          );
-        }).toList();
-      },
+              searchController: _searchController,
+              builder: (BuildContext context, SearchController controller) {
+                return SearchBar(
+                  controller: controller,
+                  padding: const MaterialStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0)),
+                  onTap: () {
+                    controller.openView();
+                  },
+                  leading: const Icon(Icons.search),
+                  hintText: widget.hintText,
+                );
+              },
+              suggestionsBuilder: (BuildContext context, SearchController controller) async {
+                final results = await _debouncedSearch(controller.text);
+                if (results == null) {
+                  return <Widget>[];
+                }
+                
+                return results.map((result) {
+                  print("result after search $result");
+                  return ListTile(
+                    title: widget.resultTitleBuilder(result),
+                    subtitle: widget.resultSubtitleBuilder?.call(result),
+                    leading: widget.resultLeadingBuilder?.call(result),
+                    onTap: () {
+                      widget.onResultSelected?.call(result);
+                      controller.closeView(widget.resultToString(result));
+                    },
+                  );
+                }).toList();
+              },
 
-      viewBuilder: (suggestions) {
-        for (var item in resultsiTunes) {
-          print("viewbuilder" + item.trackName);
-        }
-        return viewBuilderResult(suggestions, resultsiTunes);
-      },
-    );
+              viewBuilder: (suggestions) {
+                var text = _searchController.value.text;
+                if (text.trim().isEmpty) {
+                  resultsiTunes.clear();
+                }
+
+                for (var item in resultsiTunes) {
+                  print("viewbuilder " + item.trackName);
+                }
+                return viewBuilderResult(suggestions, resultsiTunes);
+              },
+      );
 
       });
       
