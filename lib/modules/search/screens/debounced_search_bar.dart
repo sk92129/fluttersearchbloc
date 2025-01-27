@@ -119,7 +119,28 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
   @override
   Widget build(BuildContext context) {
 
-    return BlocBuilder<SearchBloc, SearchState>(
+    return BlocConsumer<SearchBloc, SearchState>(
+        listenWhen: (_, newState) =>
+          newState is SearchSuccessState ||
+            newState is SearchErrorState ,
+
+        buildWhen: (_, newState) =>
+            newState is SearchSuccessState ||
+            newState is SearchErrorState,
+
+      listener: (context, state) {
+        if (state is SearchSuccessState) {
+              var list = state.result;
+              resultsiTunes.clear();
+              for (var item in list) {
+                resultsiTunes.add(item);
+                //print("listner in debounced SearchSuccessState" + item.trackName);
+              }
+        } else {
+             
+        }
+      },
+
       builder: (context, state) {
 
             if (state is SearchSuccessState) {
@@ -127,10 +148,10 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
               resultsiTunes.clear();
               for (var item in list) {
                 resultsiTunes.add(item);
-                print("in home screen SearchSuccessState" + item.trackName);
+                print("buider in debounced SearchSuccessState" + item.trackName);
               }
             } else {
-             resultsiTunes.clear();
+             
             }
 
             return SearchAnchor(
@@ -152,8 +173,9 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
         if (results == null) {
           return <Widget>[];
         }
-
+        
         return results.map((result) {
+          print("result after search $result");
           return ListTile(
             title: widget.resultTitleBuilder(result),
             subtitle: widget.resultSubtitleBuilder?.call(result),
@@ -167,6 +189,9 @@ class DebouncedSearchBarState<T> extends State<DebouncedSearchBar<T>> {
       },
 
       viewBuilder: (suggestions) {
+        for (var item in resultsiTunes) {
+          print("viewbuilder" + item.trackName);
+        }
         return viewBuilderResult(suggestions, resultsiTunes);
       },
     );

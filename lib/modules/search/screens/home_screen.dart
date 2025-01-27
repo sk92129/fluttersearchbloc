@@ -35,19 +35,8 @@ class _MyHomePageState extends State<HomeScreen> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-        body: BlocBuilder<SearchBloc, SearchState>(
-          builder: (context, state) {
-            var list;
-            if (state is SearchSuccessState) {
-              list = state.result;
-              for (var item in list) {
-                print("in home screen SearchSuccessState" + item.trackName);
-              }
-            } else {
-              list = <ITunesItem>[];
-            }
-           
-            return Column(
+        body: 
+            Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -77,9 +66,11 @@ class _MyHomePageState extends State<HomeScreen> {
                   ],
                 ],
               ],
-            );
-          },
-        ),
+            )
+
+
+ 
+
       ),
     );
   }
